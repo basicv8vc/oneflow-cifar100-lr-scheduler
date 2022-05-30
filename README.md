@@ -5,6 +5,7 @@ Source Code for Zhihu post "placeholder".
 The structure of this codebase is borrowed from [flowvision/projects/classification
 ](https://github.com/Oneflow-Inc/vision/tree/main/projects/classification), big thanks and respect :heart:
 
+**Note** This is just a demo project to demonstrate oneflow's learning rate scheduler.
 
 ## Requirements
 
