@@ -1,4 +1,4 @@
-# Demo on imagenet-mini using **OneFlow** with different learning rate schedulers
+# Demo on cifar100 using **OneFlow** with different learning rate schedulers
 
 Source Code for Zhihu post "placeholder".
 
@@ -27,21 +27,9 @@ pip install flowvision==0.1.0 opencv-python==4.4.0.46 termcolor==1.1.0 yacs==0.1
 
 ## Data prepartion
 
-### ImageNet-Mini
+### CIFAR-100
 
-ImageNet is good but too big, we use [ImageNet-Mini](https://www.kaggle.com/datasets/ifigotin/imagenetmini-1000?resource=download) in this demo project.
-
-ImageNet-Mini is about 4GB, contains 1K classes.
-
-```bash
-# download ImageNet-Mini from Kagge to current directory, https://www.kaggle.com/datasets/ifigotin/imagenetmini-1000?resource=download
-```
-
-Then,
-
-```bash
-bash extract_imagenet-mini.sh
-```
+You can download [CIFAR-100](https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz) manually and place it in specified directory, or flowvision will automatically download it for you.
 
 ## Training
 
