@@ -77,7 +77,8 @@ def main(args):
         states_dict = flow.load(args.checkpoint)
         model.load_state_dict(states_dict["model"])
         optimizer.load_state_dict(states_dict["optimizer"])
-        lr_scheduler.load_state_dict(states_dict["scheduler"])
+        if states_dict["scheduler"] is not None:
+            lr_scheduler.load_state_dict(states_dict["scheduler"])
 
     logger.info("Start training")
     start_time = time.time()
