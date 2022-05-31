@@ -7,7 +7,20 @@ def _add_base_training_args(parser):
         "--exp",
         default=None,
         type=str,
-        help="current experiment name, used for output dir",
+        help="current experiment name, used for output dir, is not set, \
+            default value is datetime.datetime.now()",
+    )
+    group.add_argument(
+        "--input",
+        default="./cifar100/",
+        type=str,
+        help="path to store dataset, or you have put cifar-100-python.tar.gz in this data path",
+    )
+    group.add_argument(
+        "--output",
+        default="output",
+        type=str,
+        help="root of output folder, the full path is <output>/<model_name>/<tag> (default: output)",
     )
     group.add_argument(
         "--num_classes",
@@ -15,12 +28,6 @@ def _add_base_training_args(parser):
         type=int,
         choices=[100],
         help="Number of classes, 100(cifar100)",
-    )
-    group.add_argument(
-        "--data_path",
-        default="./cifar100/",
-        type=str,
-        help="path to store dataset, or you have put cifar-100-python.tar.gz in this data_path",
     )
     group.add_argument(
         "--model_arch",
@@ -39,36 +46,12 @@ def _add_base_training_args(parser):
         default=224,
         help="input image size: (img_size, img_size), not 32",
     )
-
     group.add_argument(
-        "--zip_mode",
-        default=False,
-        type=bool,
-        help="Use zipped dataset instead of folder dataset",
-    )
-
-    group.add_argument(
-        "--use_checkpoint",
-        action="store_true",
-        help="whether to use gradient checkpointing to save memory",
-    )
-    group.add_argument(
-        "--cache_mode",
+        "--checkpoint",
         type=str,
-        default="part",
-        choices=["no", "full", "part"],
-        help="Cache Data in Memory: no: no cache, "
-        "full: cache all data, "
-        "part: sharding the dataset into nonoverlapping pieces and only cache one piece",
+        default=None,
+        help="data path of checkpoint to load to resume training",
     )
-    group.add_argument(
-        "--output",
-        default="output",
-        type=str,
-        metavar="PATH",
-        help="root of output folder, the full path is <output>/<model_name>/<tag> (default: output)",
-    )
-    group.add_argument("--tag", help="tag of experiment")
     group.add_argument("--throughput", action="store_true", help="Test throughput only")
 
     group.add_argument(
@@ -78,24 +61,16 @@ def _add_base_training_args(parser):
         help="number of data loading workers (default: 4)",
     )
     group.add_argument(
-        "--pin_memory",  # oneflow都没有实现non_blocking
-        default=True,
-        type=bool,
-        help="Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.",
-    )
-    group.add_argument(
-        "--interpolation",
-        default="bicubic",
-        type=str,
-        choices=["random", "bilinear", "bicubic"],
-        help="Interpolation to resize image (random, bilinear, bicubic)",
-    )
-
-    group.add_argument(
         "--epochs",
         default=100,
         type=int,
         help="number of total epochs to run",
+    )
+    group.add_argument(
+        "--start_epoch",
+        default=0,
+        type=int,
+        help="start epoch to resume training",
     )
     group.add_argument(
         "--batch_size",
@@ -128,12 +103,6 @@ def _add_base_training_args(parser):
         help="weight decay (default: 1e-4)",
     )
     group.add_argument(
-        "--drop_rate",
-        default=0.1,
-        type=float,
-        help="dropout rate",
-    )
-    group.add_argument(
         "--label_smoothing",
         default=0.1,
         type=float,
@@ -155,15 +124,6 @@ def _add_base_training_args(parser):
         type=bool,
         help="whether to use center crop when testing",
     )
-    group.add_argument(
-        "--sequential",
-        default=False,
-        type=bool,
-        help="whether to use SequentialSampler as validation sampler ",
-    )
-    # group.add_argument(
-    #     "--gpu", default=0, type=int, help="GPU id to use. If not None, disable DDP"
-    # )
     return parser
 
 
@@ -174,6 +134,13 @@ def _add_augmentation_args(parser):
         default=None,
         type=str,
         help="",
+    )
+    group.add_argument(
+        "--interpolation",
+        default="bicubic",
+        type=str,
+        choices=["random", "bilinear", "bicubic"],
+        help="Interpolation to resize image (random, bilinear, bicubic)",
     )
     group.add_argument(
         "--color_jitter",
@@ -245,7 +212,7 @@ def _add_scheduler_args(parser):
 
     group.add_argument(
         "--scheduler",
-        default=None,
+        default="CosineAnnealingLR",
         type=str,
         choices=["CosineAnnealingLR"],
         help="learning rate scheduler",
@@ -258,7 +225,6 @@ def _add_scheduler_args(parser):
     )
     group.add_argument(
         "--T_max",
-        # required="CosineAnnealingLR" in sys.argv,
         default=None,
         type=int,
         help="Maximum number of iterations/epochs",
@@ -266,7 +232,6 @@ def _add_scheduler_args(parser):
     group.add_argument(
         "--eta_min",
         default=1e-5,
-        # required="CosineAnnealingLR" in sys.argv,
         type=float,
         help="Minimum learning rate",
     )  # only required if --argument is given

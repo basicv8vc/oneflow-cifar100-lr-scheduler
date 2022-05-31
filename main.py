@@ -8,6 +8,7 @@ import argparse
 import datetime
 import numpy as np
 import oneflow as flow
+from oneflow import optim
 import oneflow.backends.cudnn as cudnn
 
 
@@ -72,9 +73,15 @@ def main(args):
         throughput(data_loader_val, model, logger)
         return
 
+    if args.checkpoint is not None:
+        states_dict = flow.load(args.checkpoint)
+        model.load_state_dict(states_dict["model"])
+        optimizer.load_state_dict(states_dict["optimizer"])
+        lr_scheduler.load_state_dict(states_dict["scheduler"])
+
     logger.info("Start training")
     start_time = time.time()
-    for epoch in range(args.epochs):
+    for epoch in range(args.start_epoch, args.epochs):
         data_loader_train.sampler.set_epoch(epoch)
 
         train_one_epoch(

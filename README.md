@@ -47,3 +47,51 @@ python main.py
 # set correct GPU_NUMS
 bash ddp_training.sh
 ```
+
+ddp_training.sh is simple, like
+```bash
+export PYTHONPATH=$PWD:$PYTHONPATH
+set -aux
+
+GPU_NUMS=2
+PORT=12345
+MODEL_ARCH="resnet34"
+
+python3 -m oneflow.distributed.launch --nproc_per_node $GPU_NUMS --master_port $PORT  \
+        main.py --model_arch $MODEL_ARCH 
+```
+
+### Resume
+
+You can specifiy the value of "--checkpoint" and "--start_epoch" to continue to training.
+
+
+### Single GPU
+
+```bash
+python main.py --checkpoint ./output/2022-05-30-23:45:48/resnet34.epoch-60.flow --start_epoch 61
+
+```
+
+### Multiple GPUs
+
+- ddp training with simple bash file
+```bash
+# set correct GPU_NUMS
+bash ddp_training.sh
+```
+
+ddp_training.sh is very simple, like
+
+```bash
+export PYTHONPATH=$PWD:$PYTHONPATH
+set -aux
+
+GPU_NUMS=2
+PORT=12345
+MODEL_ARCH="resnet34"
+
+python3 -m oneflow.distributed.launch --nproc_per_node $GPU_NUMS --master_port $PORT  \
+        main.py --model_arch $MODEL_ARCH --checkpoint ./output/2022-05-30-23:45:48/resnet34.epoch-60.flow --start_epoch 61
+
+```

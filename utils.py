@@ -110,7 +110,7 @@ def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
 
     dataset = datasets.CIFAR100(
-        root=args.data_path,
+        root=args.input,
         train=is_train,
         transform=transform,
         download=True,
