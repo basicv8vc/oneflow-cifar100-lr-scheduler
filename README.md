@@ -1,6 +1,6 @@
 # Demo on cifar100 using **OneFlow** with different learning rate schedulers
 
-Source Code for Zhihu post "placeholder".
+Source Code for Zhihu post "[图解OneFlow中的学习率调整策略](https://zhuanlan.zhihu.com/p/520719314?)".
 
 The structure of this codebase is borrowed from [flowvision/projects/classification
 ](https://github.com/Oneflow-Inc/vision/tree/main/projects/classification), big thanks and respect :heart:
